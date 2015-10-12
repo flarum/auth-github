@@ -2,6 +2,6 @@ var gulp = require('flarum-gulp');
 
 gulp({
   modules: {
-    'github': 'src/**/*.js'
+    'flarum/auth/github': 'src/**/*.js'
   }
 });

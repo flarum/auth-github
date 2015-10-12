@@ -13,12 +13,12 @@ export default class GithubSettingsModal extends SettingsModal {
     return [
       <div className="Form-group">
         <label>Client ID</label>
-        <input className="FormControl" bidi={this.setting('github.client_id')}/>
+        <input className="FormControl" bidi={this.setting('flarum-auth-github.client_id')}/>
       </div>,
 
       <div className="Form-group">
         <label>Client Secret</label>
-        <input className="FormControl" bidi={this.setting('github.client_secret')}/>
+        <input className="FormControl" bidi={this.setting('flarum-auth-github.client_secret')}/>
       </div>
     ];
   }
