@@ -25,7 +25,7 @@
     },
     "extra": {
         "flarum-extension": {
-            "title": "GitHub",
+            "title": "GitHub Login",
             "icon": {
                 "name": "github",
                 "backgroundColor": "#eee",
