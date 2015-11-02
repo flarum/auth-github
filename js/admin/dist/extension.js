@@ -1,23 +1,4 @@
-System.register('flarum/auth/github/main', ['flarum/app', 'flarum/auth/github/components/GithubSettingsModal'], function (_export) {
-  'use strict';
-
-  var app, GithubSettingsModal;
-  return {
-    setters: [function (_flarumApp) {
-      app = _flarumApp['default'];
-    }, function (_flarumAuthGithubComponentsGithubSettingsModal) {
-      GithubSettingsModal = _flarumAuthGithubComponentsGithubSettingsModal['default'];
-    }],
-    execute: function () {
-
-      app.initializers.add('flarum-auth-github', function () {
-        app.extensionSettings['flarum-auth-github'] = function () {
-          return app.modal.show(new GithubSettingsModal());
-        };
-      });
-    }
-  };
-});;System.register('flarum/auth/github/components/GithubSettingsModal', ['flarum/components/SettingsModal'], function (_export) {
+System.register('flarum/auth/github/components/GithubSettingsModal', ['flarum/components/SettingsModal'], function (_export) {
   'use strict';
 
   var SettingsModal, GithubSettingsModal;
@@ -72,6 +53,26 @@ System.register('flarum/auth/github/main', ['flarum/app', 'flarum/auth/github/co
       })(SettingsModal);
 
       _export('default', GithubSettingsModal);
+    }
+  };
+});;
+System.register('flarum/auth/github/main', ['flarum/app', 'flarum/auth/github/components/GithubSettingsModal'], function (_export) {
+  'use strict';
+
+  var app, GithubSettingsModal;
+  return {
+    setters: [function (_flarumApp) {
+      app = _flarumApp['default'];
+    }, function (_flarumAuthGithubComponentsGithubSettingsModal) {
+      GithubSettingsModal = _flarumAuthGithubComponentsGithubSettingsModal['default'];
+    }],
+    execute: function () {
+
+      app.initializers.add('flarum-auth-github', function () {
+        app.extensionSettings['flarum-auth-github'] = function () {
+          return app.modal.show(new GithubSettingsModal());
+        };
+      });
     }
   };
 });
