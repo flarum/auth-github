@@ -6,18 +6,18 @@ export default class GithubSettingsModal extends SettingsModal {
   }
 
   title() {
-    return 'GitHub Settings';
+    return app.translator.trans('flarum-auth-github.admin.github_settings.title');
   }
 
   form() {
     return [
       <div className="Form-group">
-        <label>Client ID</label>
+        <label>{app.translator.trans('flarum-auth-github.admin.github_settings.client_id_label')}</label>
         <input className="FormControl" bidi={this.setting('flarum-auth-github.client_id')}/>
       </div>,
 
       <div className="Form-group">
-        <label>Client Secret</label>
+        <label>{app.translator.trans('flarum-auth-github.admin.github_settings.client_secret_label')}</label>
         <input className="FormControl" bidi={this.setting('flarum-auth-github.client_secret')}/>
       </div>
     ];
