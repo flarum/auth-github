@@ -83,6 +83,6 @@ class GitHubAuthController implements ControllerInterface
         $username = preg_replace('/[^a-z0-9-_]/i', '', $owner->getNickname());
         $avatarUrl = array_get($owner->toArray(), 'avatar_url');
 
-        return $this->authenticate(compact('email'), compact('username', 'avatarUrl'));
+        return $this->authenticate($request, compact('email'), compact('username', 'avatarUrl'));
     }
 }
