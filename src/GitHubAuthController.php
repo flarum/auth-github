@@ -10,79 +10,70 @@
 
 namespace Flarum\Auth\GitHub;
 
-use Flarum\Forum\Controller\AuthenticateUserTrait;
-use Flarum\Forum\UrlGenerator;
-use Flarum\Http\Controller\ControllerInterface;
+use Flarum\Forum\AuthenticationResponseFactory;
+use Flarum\Forum\Controller\AbstractOAuth2Controller;
 use Flarum\Settings\SettingsRepositoryInterface;
 use Illuminate\Contracts\Bus\Dispatcher;
 use League\OAuth2\Client\Provider\Github;
+use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Zend\Diactoros\Response\RedirectResponse;
 
-class GitHubAuthController implements ControllerInterface
+class GitHubAuthController extends AbstractOAuth2Controller
 {
-    use AuthenticateUserTrait;
-
     /**
      * @var SettingsRepositoryInterface
      */
     protected $settings;
 
     /**
-     * @var UrlGenerator
-     */
-    protected $url;
-
-    /**
+     * @param AuthenticationResponseFactory $authResponse
      * @param SettingsRepositoryInterface $settings
-     * @param UrlGenerator $url
-     * @param Dispatcher $bus
      */
-    public function __construct(SettingsRepositoryInterface $settings, UrlGenerator $url, Dispatcher $bus)
+    public function __construct(AuthenticationResponseFactory $authResponse, SettingsRepositoryInterface $settings)
     {
         $this->settings = $settings;
-        $this->url = $url;
-        $this->bus = $bus;
+        $this->authResponse = $authResponse;
     }
 
     /**
-     * @param Request $request
-     * @param array $routeParams
-     * @return \Psr\Http\Message\ResponseInterface|RedirectResponse
+     * {@inheritdoc}
      */
-    public function handle(Request $request, array $routeParams = [])
+    protected function getProvider($redirectUri)
     {
-        session_start();
-
-        $provider = new Github([
+        return new Github([
             'clientId'     => $this->settings->get('flarum-auth-github.client_id'),
             'clientSecret' => $this->settings->get('flarum-auth-github.client_secret'),
-            'redirectUri'  => $this->url->toRoute('auth.github')
+            'redirectUri'  => $redirectUri
         ]);
+    }
 
-        if (! isset($_GET['code'])) {
-            $authUrl = $provider->getAuthorizationUrl([
-                'scope' => ['user:email']
-            ]);
-            $_SESSION['oauth2state'] = $provider->getState();
+    /**
+     * {@inheritdoc}
+     */
+    protected function getAuthorizationUrlOptions()
+    {
+        return ['scope' => ['user:email']];
+    }
 
-            return new RedirectResponse($authUrl);
-        } elseif (empty($_GET['state']) || ($_GET['state'] !== $_SESSION['oauth2state'])) {
-            unset($_SESSION['oauth2state']);
-            echo 'Invalid state.';
-            exit;
-        }
+    /**
+     * {@inheritdoc}
+     */
+    protected function getIdentification(ResourceOwnerInterface $resourceOwner)
+    {
+        return [
+            'email' => $resourceOwner->getEmail()
+        ];
+    }
 
-        $token = $provider->getAccessToken('authorization_code', [
-            'code' => $_GET['code']
-        ]);
-
-        $owner = $provider->getResourceOwner($token);
-
-        $email = $owner->getEmail();
-        $username = preg_replace('/[^a-z0-9-_]/i', '', $owner->getNickname());
-        $avatarUrl = array_get($owner->toArray(), 'avatar_url');
-
-        return $this->authenticate($request, compact('email'), compact('username', 'avatarUrl'));
+    /**
+     * {@inheritdoc}
+     */
+    protected function getSuggestions(ResourceOwnerInterface $resourceOwner)
+    {
+        return [
+            'username' => $resourceOwner->getNickname(),
+            'avatarUrl' => array_get($resourceOwner->toArray(), 'avatar_url')
+        ];
     }
 }
