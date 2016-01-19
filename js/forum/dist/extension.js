@@ -22,7 +22,7 @@ System.register('flarum/auth/github/main', ['flarum/extend', 'flarum/app', 'flar
               className: 'Button LogInButton--github',
               icon: 'github',
               path: '/auth/github' },
-            'Log in with GitHub'
+            app.translator.trans('flarum-auth-github.forum.log_in.with_github_button')
           ));
         });
       });

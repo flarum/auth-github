@@ -23,7 +23,7 @@ System.register('flarum/auth/github/components/GithubSettingsModal', ['flarum/co
         }, {
           key: 'title',
           value: function title() {
-            return 'GitHub Settings';
+            return app.translator.trans('flarum-auth-github.admin.github_settings.title');
           }
         }, {
           key: 'form',
@@ -34,7 +34,7 @@ System.register('flarum/auth/github/components/GithubSettingsModal', ['flarum/co
               m(
                 'label',
                 null,
-                'Client ID'
+                app.translator.trans('flarum-auth-github.admin.github_settings.client_id_label')
               ),
               m('input', { className: 'FormControl', bidi: this.setting('flarum-auth-github.client_id') })
             ), m(
@@ -43,7 +43,7 @@ System.register('flarum/auth/github/components/GithubSettingsModal', ['flarum/co
               m(
                 'label',
                 null,
-                'Client Secret'
+                app.translator.trans('flarum-auth-github.admin.github_settings.client_secret_label')
               ),
               m('input', { className: 'FormControl', bidi: this.setting('flarum-auth-github.client_secret') })
             )];
