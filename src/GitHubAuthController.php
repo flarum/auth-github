@@ -13,11 +13,8 @@ namespace Flarum\Auth\GitHub;
 use Flarum\Forum\AuthenticationResponseFactory;
 use Flarum\Forum\Controller\AbstractOAuth2Controller;
 use Flarum\Settings\SettingsRepositoryInterface;
-use Illuminate\Contracts\Bus\Dispatcher;
 use League\OAuth2\Client\Provider\Github;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Zend\Diactoros\Response\RedirectResponse;
 
 class GitHubAuthController extends AbstractOAuth2Controller
 {
