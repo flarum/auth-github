@@ -60,9 +60,21 @@ class GitHubAuthController extends AbstractOAuth2Controller
      */
     protected function getIdentification(ResourceOwnerInterface $resourceOwner, AbstractProvider $provider, AccessToken $token)
     {
-        return [
-            'email' => $resourceOwner->getEmail()
-        ];
+        if ($email = $resourceOwner->getEmail()) {
+            return [
+                'email' => $email
+            ];
+        }
+
+        $url = $provider->getResourceOwnerDetailsUrl($token).'/emails';
+        $emails = $provider->getResponse($provider->getAuthenticatedRequest('GET', $url, $token));
+        foreach ($emails as $email) {
+            if ($email['primary'] && $email['verified']) {
+                return [
+                    'email' => $email
+                ];
+            }
+        }
     }
 
     /**
