@@ -1,18 +1,18 @@
-System.register('flarum/auth/github/components/GithubSettingsModal', ['flarum/components/SettingsModal'], function (_export) {
-  'use strict';
+'use strict';
 
+System.register('flarum/auth/github/components/GithubSettingsModal', ['flarum/components/SettingsModal'], function (_export, _context) {
   var SettingsModal, GithubSettingsModal;
   return {
     setters: [function (_flarumComponentsSettingsModal) {
-      SettingsModal = _flarumComponentsSettingsModal['default'];
+      SettingsModal = _flarumComponentsSettingsModal.default;
     }],
     execute: function () {
-      GithubSettingsModal = (function (_SettingsModal) {
+      GithubSettingsModal = function (_SettingsModal) {
         babelHelpers.inherits(GithubSettingsModal, _SettingsModal);
 
         function GithubSettingsModal() {
           babelHelpers.classCallCheck(this, GithubSettingsModal);
-          babelHelpers.get(Object.getPrototypeOf(GithubSettingsModal.prototype), 'constructor', this).apply(this, arguments);
+          return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(GithubSettingsModal).apply(this, arguments));
         }
 
         babelHelpers.createClass(GithubSettingsModal, [{
@@ -50,21 +50,21 @@ System.register('flarum/auth/github/components/GithubSettingsModal', ['flarum/co
           }
         }]);
         return GithubSettingsModal;
-      })(SettingsModal);
+      }(SettingsModal);
 
       _export('default', GithubSettingsModal);
     }
   };
 });;
-System.register('flarum/auth/github/main', ['flarum/app', 'flarum/auth/github/components/GithubSettingsModal'], function (_export) {
-  'use strict';
+'use strict';
 
+System.register('flarum/auth/github/main', ['flarum/app', 'flarum/auth/github/components/GithubSettingsModal'], function (_export, _context) {
   var app, GithubSettingsModal;
   return {
     setters: [function (_flarumApp) {
-      app = _flarumApp['default'];
+      app = _flarumApp.default;
     }, function (_flarumAuthGithubComponentsGithubSettingsModal) {
-      GithubSettingsModal = _flarumAuthGithubComponentsGithubSettingsModal['default'];
+      GithubSettingsModal = _flarumAuthGithubComponentsGithubSettingsModal.default;
     }],
     execute: function () {
 
