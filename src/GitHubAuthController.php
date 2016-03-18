@@ -59,7 +59,7 @@ class GitHubAuthController extends AbstractOAuth2Controller
     protected function getIdentification(ResourceOwnerInterface $resourceOwner)
     {
         return [
-            'email' => $resourceOwner->getEmail()
+            'email' => $resourceOwner->getEmail() ?: $this->getEmailFromApi()
         ];
     }
 
@@ -72,5 +72,20 @@ class GitHubAuthController extends AbstractOAuth2Controller
             'username' => $resourceOwner->getNickname(),
             'avatarUrl' => array_get($resourceOwner->toArray(), 'avatar_url')
         ];
+    }
+
+    protected function getEmailFromApi()
+    {
+        $url = $this->provider->apiDomain.'/user/emails';
+
+        $emails = $this->provider->getResponse(
+            $this->provider->getAuthenticatedRequest('GET', $url, $this->token)
+        );
+
+        foreach ($emails as $email) {
+            if ($email['primary'] && $email['verified']) {
+                return $email['email'];
+            }
+        }
     }
 }
