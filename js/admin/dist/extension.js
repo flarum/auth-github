@@ -14,7 +14,7 @@ System.register('flarum/auth/github/components/GithubSettingsModal', ['flarum/co
 
         function GithubSettingsModal() {
           babelHelpers.classCallCheck(this, GithubSettingsModal);
-          return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(GithubSettingsModal).apply(this, arguments));
+          return babelHelpers.possibleConstructorReturn(this, (GithubSettingsModal.__proto__ || Object.getPrototypeOf(GithubSettingsModal)).apply(this, arguments));
         }
 
         babelHelpers.createClass(GithubSettingsModal, [{
