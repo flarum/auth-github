@@ -9,10 +9,18 @@
  * file that was distributed with this source code.
  */
 
-use Flarum\Auth\GitHub\Listener;
-use Illuminate\Contracts\Events\Dispatcher;
+use Flarum\Auth\GitHub\GitHubAuthController;
+use Flarum\Extend;
 
-return function (Dispatcher $events) {
-    $events->subscribe(Listener\AddClientAssets::class);
-    $events->subscribe(Listener\AddGitHubAuthRoute::class);
-};
+return [
+    (new Extend\Assets('forum'))
+        ->defaultAssets(__DIR__)
+        ->bootstrapper('flarum/auth/github/main'),
+    (new Extend\Assets('admin'))
+        ->asset(__DIR__.'/js/admin/dist/extension.js')
+        ->bootstrapper('flarum/auth/github/main'),
+    new Extend\Route(
+        'forum', 'auth.github',
+        'get', '/auth/github', GitHubAuthController::class
+    )
+];
