@@ -19,8 +19,6 @@ return [
     (new Extend\Assets('admin'))
         ->asset(__DIR__.'/js/admin/dist/extension.js')
         ->bootstrapper('flarum/auth/github/main'),
-    new Extend\Route(
-        'forum', 'auth.github',
-        'get', '/auth/github', GitHubAuthController::class
-    )
+    (new Extend\Routes('forum'))
+        ->get('/auth/github', 'auth.github', GitHubAuthController::class),
 ];
