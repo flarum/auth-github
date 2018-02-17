@@ -30,7 +30,7 @@
         "flarum-extension": {
             "title": "GitHub Login",
             "icon": {
-                "name": "github",
+                "name": "fab fa-github",
                 "backgroundColor": "#eee",
                 "color": "#333"
             }
