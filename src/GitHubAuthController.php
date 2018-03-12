@@ -79,7 +79,7 @@ class GitHubAuthController extends AbstractOAuth2Controller
     {
         $url = $this->provider->apiDomain.'/user/emails';
 
-        $emails = $this->provider->getResponse(
+        $emails = $this->provider->getParsedResponse(
             $this->provider->getAuthenticatedRequest('GET', $url, $this->token)
         );
 
