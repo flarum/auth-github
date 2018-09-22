@@ -23,7 +23,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface;
 use Zend\Diactoros\Response\RedirectResponse;
 
-class GithubAuthController implements RequestHandlerInterface
+class GitHubAuthController implements RequestHandlerInterface
 {
     /**
      * @var ResponseFactory
