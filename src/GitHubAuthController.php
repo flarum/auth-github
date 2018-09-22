@@ -11,76 +11,97 @@
 
 namespace Flarum\Auth\GitHub;
 
-use Flarum\Forum\AuthenticationResponseFactory;
-use Flarum\Forum\Controller\AbstractOAuth2Controller;
+use Exception;
+use Flarum\Forum\Auth\Registration;
+use Flarum\Forum\Auth\ResponseFactory;
 use Flarum\Settings\SettingsRepositoryInterface;
 use League\OAuth2\Client\Provider\Github;
-use League\OAuth2\Client\Provider\ResourceOwnerInterface;
+use League\OAuth2\Client\Provider\GithubResourceOwner;
+use League\OAuth2\Client\Token\AccessToken;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Server\RequestHandlerInterface;
+use Zend\Diactoros\Response\RedirectResponse;
 
-class GitHubAuthController extends AbstractOAuth2Controller
+class GitHubAuthController implements RequestHandlerInterface
 {
+    /**
+     * @var ResponseFactory
+     */
+    protected $response;
+
     /**
      * @var SettingsRepositoryInterface
      */
     protected $settings;
 
     /**
-     * @param AuthenticationResponseFactory $authResponse
-     * @param SettingsRepositoryInterface $settings
+     * @param ResponseFactory $response
      */
-    public function __construct(AuthenticationResponseFactory $authResponse, SettingsRepositoryInterface $settings)
+    public function __construct(ResponseFactory $response, SettingsRepositoryInterface $settings)
     {
+        $this->response = $response;
         $this->settings = $settings;
-        $this->authResponse = $authResponse;
     }
 
     /**
-     * {@inheritdoc}
+     * @param Request $request
+     * @return ResponseInterface
+     * @throws Exception
      */
-    protected function getProvider($redirectUri)
+    public function handle(Request $request): ResponseInterface
     {
-        return new Github([
-            'clientId'     => $this->settings->get('flarum-auth-github.client_id'),
+        $redirectUri = (string) $request->getAttribute('originalUri', $request->getUri())->withQuery('');
+
+        $provider = new Github([
+            'clientId' => $this->settings->get('flarum-auth-github.client_id'),
             'clientSecret' => $this->settings->get('flarum-auth-github.client_secret'),
-            'redirectUri'  => $redirectUri
+            'redirectUri' => $redirectUri
         ]);
+
+        $session = $request->getAttribute('session');
+        $queryParams = $request->getQueryParams();
+
+        $code = array_get($queryParams, 'code');
+
+        if (! $code) {
+            $authUrl = $provider->getAuthorizationUrl(['scope' => ['user:email']]);
+            $session->put('oauth2state', $provider->getState());
+
+            return new RedirectResponse($authUrl.'&display=popup');
+        }
+
+        $state = array_get($queryParams, 'state');
+
+        if (! $state || $state !== $session->get('oauth2state')) {
+            $session->remove('oauth2state');
+
+            throw new Exception('Invalid state');
+        }
+
+        $token = $provider->getAccessToken('authorization_code', compact('code'));
+
+        /** @var GithubResourceOwner $user */
+        $user = $provider->getResourceOwner($token);
+
+        return $this->response->make(
+            'github', $user->getId(),
+            function (Registration $registration) use ($user, $provider, $token) {
+                $registration
+                    ->provideTrustedEmail($user->getEmail() ?: $this->getEmailFromApi($provider, $token))
+                    ->provideAvatar(array_get($user->toArray(), 'avatar_url'))
+                    ->suggestUsername($user->getNickname())
+                    ->setPayload($user->toArray());
+            }
+        );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function getAuthorizationUrlOptions()
+    private function getEmailFromApi(Github $provider, AccessToken $token)
     {
-        return ['scope' => ['user:email']];
-    }
+        $url = $provider->apiDomain.'/user/emails';
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function getIdentification(ResourceOwnerInterface $resourceOwner)
-    {
-        return [
-            'email' => $resourceOwner->getEmail() ?: $this->getEmailFromApi()
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getSuggestions(ResourceOwnerInterface $resourceOwner)
-    {
-        return [
-            'username' => $resourceOwner->getNickname(),
-            'avatarUrl' => array_get($resourceOwner->toArray(), 'avatar_url')
-        ];
-    }
-
-    protected function getEmailFromApi()
-    {
-        $url = $this->provider->apiDomain.'/user/emails';
-
-        $emails = $this->provider->getResponse(
-            $this->provider->getAuthenticatedRequest('GET', $url, $this->token)
+        $emails = $provider->getResponse(
+            $provider->getAuthenticatedRequest('GET', $url, $token)
         );
 
         foreach ($emails as $email) {
