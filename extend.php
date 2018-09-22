@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-use Flarum\Auth\GitHub\GitHubAuthController;
+use Flarum\Auth\Github\GithubAuthController;
 use Flarum\Extend;
 
 return [
@@ -21,5 +21,5 @@ return [
         ->js(__DIR__.'/js/dist/admin.js'),
 
     (new Extend\Routes('forum'))
-        ->get('/auth/github', 'auth.github', GitHubAuthController::class),
+        ->get('/auth/github', 'auth.github', GithubAuthController::class),
 ];

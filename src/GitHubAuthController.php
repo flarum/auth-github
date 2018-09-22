@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Flarum\Auth\GitHub;
+namespace Flarum\Auth\Github;
 
 use Exception;
 use Flarum\Forum\Auth\Registration;
@@ -23,7 +23,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface;
 use Zend\Diactoros\Response\RedirectResponse;
 
-class GitHubAuthController implements RequestHandlerInterface
+class GithubAuthController implements RequestHandlerInterface
 {
     /**
      * @var ResponseFactory

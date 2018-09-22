@@ -20,7 +20,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Flarum\\Auth\\GitHub\\": "src/"
+            "Flarum\\Auth\\Github\\": "src/"
         }
     },
     "extra": {
