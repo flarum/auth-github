@@ -12,7 +12,8 @@
 namespace Flarum\Auth\GitHub;
 
 use Exception;
-use Flarum\Forum\AuthenticationResponseFactory;
+use Flarum\Forum\Auth\Registration;
+use Flarum\Forum\Auth\ResponseFactory;
 use Flarum\Settings\SettingsRepositoryInterface;
 use League\OAuth2\Client\Provider\Github;
 use League\OAuth2\Client\Provider\GithubResourceOwner;
@@ -25,9 +26,9 @@ use Zend\Diactoros\Response\RedirectResponse;
 class GitHubAuthController implements RequestHandlerInterface
 {
     /**
-     * @var AuthenticationResponseFactory
+     * @var ResponseFactory
      */
-    protected $authResponse;
+    protected $response;
 
     /**
      * @var SettingsRepositoryInterface
@@ -35,11 +36,11 @@ class GitHubAuthController implements RequestHandlerInterface
     protected $settings;
 
     /**
-     * @param AuthenticationResponseFactory $authResponse
+     * @param ResponseFactory $response
      */
-    public function __construct(AuthenticationResponseFactory $authResponse, SettingsRepositoryInterface $settings)
+    public function __construct(ResponseFactory $response, SettingsRepositoryInterface $settings)
     {
-        $this->authResponse = $authResponse;
+        $this->response = $response;
         $this->settings = $settings;
     }
 
@@ -83,17 +84,16 @@ class GitHubAuthController implements RequestHandlerInterface
         /** @var GithubResourceOwner $user */
         $user = $provider->getResourceOwner($token);
 
-        return $this->authResponse->make([
-            'identification' => [
-                'email' => $user->getEmail() ?: $this->getEmailFromApi($provider, $token)
-            ],
-            'attributes' => [
-                'avatarUrl' => array_get($user->toArray(), 'avatar_url')
-            ],
-            'suggestions' => [
-                'username' => $user->getNickname()
-            ]
-        ]);
+        return $this->response->make(
+            'github', $user->getId(),
+            function (Registration $registration) use ($user, $provider, $token) {
+                $registration
+                    ->provideTrustedEmail($user->getEmail() ?: $this->getEmailFromApi($provider, $token))
+                    ->provideAvatar(array_get($user->toArray(), 'avatar_url'))
+                    ->suggestUsername($user->getNickname())
+                    ->setPayload($user->toArray());
+            }
+        );
     }
 
     private function getEmailFromApi(Github $provider, AccessToken $token)
