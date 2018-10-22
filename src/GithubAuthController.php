@@ -100,9 +100,11 @@ class GithubAuthController implements RequestHandlerInterface
     {
         $url = $provider->apiDomain.'/user/emails';
 
-        $emails = $provider->getResponse(
+        $response = $provider->getResponse(
             $provider->getAuthenticatedRequest('GET', $url, $token)
         );
+
+        $emails = json_decode($response->getBody(), true);
 
         foreach ($emails as $email) {
             if ($email['primary'] && $email['verified']) {
