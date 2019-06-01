@@ -14,6 +14,7 @@ namespace Flarum\Auth\Github;
 use Exception;
 use Flarum\Forum\Auth\Registration;
 use Flarum\Forum\Auth\ResponseFactory;
+use Flarum\Http\UrlGenerator;
 use Flarum\Settings\SettingsRepositoryInterface;
 use League\OAuth2\Client\Provider\Github;
 use League\OAuth2\Client\Provider\GithubResourceOwner;
@@ -36,12 +37,20 @@ class GithubAuthController implements RequestHandlerInterface
     protected $settings;
 
     /**
-     * @param ResponseFactory $response
+     * @var UrlGenerator
      */
-    public function __construct(ResponseFactory $response, SettingsRepositoryInterface $settings)
+    protected $url;
+
+    /**
+     * @param ResponseFactory $response
+     * @param SettingsRepositoryInterface $settings
+     * @param UrlGenerator $url
+     */
+    public function __construct(ResponseFactory $response, SettingsRepositoryInterface $settings, UrlGenerator $url)
     {
         $this->response = $response;
         $this->settings = $settings;
+        $this->url = $url;
     }
 
     /**
@@ -51,7 +60,7 @@ class GithubAuthController implements RequestHandlerInterface
      */
     public function handle(Request $request): ResponseInterface
     {
-        $redirectUri = (string) $request->getAttribute('originalUri', $request->getUri())->withQuery('');
+        $redirectUri = $this->url->to('forum')->route('auth.github');
 
         $provider = new Github([
             'clientId' => $this->settings->get('flarum-auth-github.client_id'),
