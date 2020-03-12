@@ -19,6 +19,7 @@ use League\OAuth2\Client\Provider\Github;
 use League\OAuth2\Client\Provider\GithubResourceOwner;
 use League\OAuth2\Client\Token\AccessToken;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class GithubAuthDriver implements SsoDriverInterface
 {
@@ -26,6 +27,11 @@ class GithubAuthDriver implements SsoDriverInterface
      * @var SettingsRepositoryInterface
      */
     protected $settings;
+
+    /**
+     * @var TranslatorInterface
+     */
+    protected $translator;
 
     /**
      * @var UrlGenerator
@@ -37,9 +43,10 @@ class GithubAuthDriver implements SsoDriverInterface
      * @param SettingsRepositoryInterface $settings
      * @param UrlGenerator $url
      */
-    public function __construct(SettingsRepositoryInterface $settings, UrlGenerator $url)
+    public function __construct(SettingsRepositoryInterface $settings, TranslatorInterface $translator, UrlGenerator $url)
     {
         $this->settings = $settings;
+        $this->translator = $translator;
         $this->url = $url;
     }
 
@@ -48,9 +55,9 @@ class GithubAuthDriver implements SsoDriverInterface
         return [
             "name" => "Github",
             "icon" => "fab fa-github",
-            "buttonColor" => "#333333",
-            "buttonText" => "Login with Github",
-            "buttonTextColor" => "#fff",
+            "buttonColor" => "#ccc",
+            "buttonText" => $this->translator->trans('flarum-auth-github.forum.log_in.with_github_button'),
+            "buttonTextColor" => "#333",
         ];
     }
 
