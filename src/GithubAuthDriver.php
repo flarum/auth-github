@@ -39,8 +39,8 @@ class GithubAuthDriver implements SsoDriverInterface
     protected $url;
 
     /**
-     * @param ResponseFactory $response
      * @param SettingsRepositoryInterface $settings
+     * @param TranslatorInterface $translator
      * @param UrlGenerator $url
      */
     public function __construct(SettingsRepositoryInterface $settings, TranslatorInterface $translator, UrlGenerator $url)
