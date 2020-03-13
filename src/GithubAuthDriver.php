@@ -63,7 +63,7 @@ class GithubAuthDriver implements SsoDriverInterface
 
     public function sso(Request $request, SsoResponse $ssoResponse)
     {
-        $redirectUri = $this->url->to('forum')->route('sso', ['driver' => 'github']);
+        $redirectUri = $this->url->to('forum')->route('sso', ['provider' => 'github']);
 
         $provider = new Github([
             'clientId' => $this->settings->get('flarum-auth-github.client_id'),

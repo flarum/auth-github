@@ -15,5 +15,5 @@ return [
         ->js(__DIR__.'/js/dist/admin.js'),
 
     (new Extend\Auth)
-        ->addAuthDriver('github', GithubAuthDriver::class)
+        ->ssoDriver('github', GithubAuthDriver::class)
 ];
