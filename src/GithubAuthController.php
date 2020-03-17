@@ -92,7 +92,8 @@ class GithubAuthController implements RequestHandlerInterface
         $user = $provider->getResourceOwner($token);
 
         return $this->response->make(
-            'github', $user->getId(),
+            'github',
+            $user->getId(),
             function (Registration $registration) use ($user, $provider, $token) {
                 $registration
                     ->provideTrustedEmail($user->getEmail() ?: $this->getEmailFromApi($provider, $token))
