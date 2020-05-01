@@ -9,7 +9,7 @@
         "source": "https://github.com/flarum/auth-github"
     },
     "require": {
-        "flarum/core": "^0.1.0-beta.12",
+        "flarum/core": "^0.1.0-beta.13",
         "league/oauth2-github": "^2.0"
     },
     "autoload": {
